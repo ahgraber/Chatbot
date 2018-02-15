@@ -36,10 +36,10 @@
 ### Import model data
   
   source("read_in.R")  
-  # readin( "filename", infolder=F, <if T> subfolder= "subfolder" )
+  # read_in( "filename", infolder=F, <if T> subfolder= "subfolder" )
 
   # Import data
-  data <- readin(filename="Demo Inputs.csv", infolder=F)
+  data <- read_in(filename="Demo Inputs.csv", infolder=F)
 
   # categories should be factors
   data$Category <- as.factor(data$Category)
@@ -70,16 +70,19 @@
     magrittr::set_colnames(c("Text","Category"))
   
   # Typos and Synonyms
-  # see fixTypos --> create custom dictionary for synonym mgmt if necessary (SEI's --> SEI is)
+    # see fixTypos --> create custom dictionary for synonym mgmt if necessary (SEI's --> SEI is)
+    # for Synonyms, either force replacement or build dictionary to lookup for unknown values
+      # force replacement is probably easier
+      # want to replace before tokenizing
 
   # tokenize
   tokens <- clean %>%
     unnest_tokens(token, Text) %>%
     filter(!is.na(token))
 
-  # Stopword management - see wordListMgmt.R
+  # Stopword management - create after looking at theorized queries
   # import revised stop word list
-  custom_spwords <- readin(filename="custom_spwords.csv", subfolder="reference/Lists", infolder=T)
+  custom_spwords <- read_in(filename="custom_spwords.csv", subfolder="", infolder=F)
   # remove stop words (edit stop words as necessary)
   tokens <- tokens %>%
     filter(!token %in% custom_spwords$word)
