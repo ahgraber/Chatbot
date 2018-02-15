@@ -16,7 +16,7 @@ dummy <- function() {
   if(!exists("text_clean.R", mode="function")) source("text_clean.R")
     
   # import revised stop word list
-  custom_spwords <- read_in(filename="custom_spwords.csv", subfolder="reference/Lists", infolder=T)
+  #custom_spwords <- read_in(filename="custom_spwords.csv", subfolder="reference/Lists", infolder=T)
 
 #--------------------------------------------------------------------------------------------------
     
@@ -39,8 +39,8 @@ dummy <- function() {
   
 
     # remove stop words (edit stop words as necessary)
-    tokens <- tokens %>%
-      filter(!token %in% custom_spwords$word)
+    # tokens <- tokens %>%
+      # filter(!token %in% custom_spwords$word)
     
     ### Recombine
     cleanQuery <- paste(unlist(c(tokens, use.names=F)), collapse=" ")
