@@ -1,19 +1,15 @@
 ### Drexel Datathon - First Clean
-
+first_clean <- function (data) {
+  
 #-- Package manager & housekeeper -----------------------------------------------------------------
 
-### Install packages
-
-## Uncomment and run the first time to ensure all packages are installed:
-  # install.packages("tidyverse")
-  # install.packages("stringr")
-  # install.packages("textclean")
-  # install.packages("tidytext")
-  # install.packages("textstem")
-  # install.packages("widyr")
-  # install.packages("irlba")
-  # install.packages("broom")
-
+  # load packages used
+    if(!"pacman" %in% installed.packages()[,"Package"]) install.packages("pacman")
+    pacman::p_load(tidyverse, stringr, tidytext, textclean, textstem)
+  
+  # load custom functions  
+    if(!exists("read_in.R", mode="function")) source("read_in.R")
+    if(!exists("text_clean.R", mode="function")) source("text_clean.R")
 
 #--------------------------------------------------------------------------------------------------
 
@@ -25,12 +21,6 @@
 
 #--------------------------------------------------------------------------------------------------
 ### Import model data
-  
-  source("read_in.R")  
-  # read_in( "filename", infolder=F, <if T> subfolder= "subfolder" )
-
-  # Import data
-  data <- read_in(filename="Datathon.csv", infolder=F)
 
   # categories should be factors
   data$Intent <- as.factor(data$Intent)
@@ -120,5 +110,11 @@
     # summarize(Quantity2 = ifelse(sum(Quantity) <= 0, 0, 1)) %>%
     spread(key = token, value = n, fill = 0, drop=F) %>%
     ungroup()              
-                    
+  
+  wideData <- cbind(wideData, cleanData$Intent)
+  names(wideData)[names(wideData) == 'cleanData$Intent'] <- 'IntentCat'
+#--------------------------------------------------------------------------------------------------
 
+  return(wideData)
+
+}

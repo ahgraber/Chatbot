@@ -22,7 +22,7 @@
   # install.packages("topicmodels")
   # install.packages("zoo")
 
-  source("read_in.R")
+  
 
 #--------------------------------------------------------------------------------------------------
 # Goals:
@@ -33,6 +33,12 @@
 #--------------------------------------------------------------------------------------------------
 
   # clean data
+  source("read_in.R")
+  data <- read_in(filename="Datathon.csv", infolder=F)
+  
+  source("first_clean.R")
+  cleanData <- first_clean(data)
+  # intention is called "IntentCat"
   
 #--------------------------------------------------------------------------------------------------
 ### Tokens & NGrams
