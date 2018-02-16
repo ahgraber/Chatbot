@@ -1,26 +1,19 @@
 ### Control function
-controller <- function() {
-  # to run, input into console:
-  # source("dummy.R")
-  # data <- dummy()
-  
-#-- Initialize ------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------------------
+
   # Package manager & housekeeper
   if(!"pacman" %in% installed.packages()[,"Package"]) install.packages("pacman")
     # load packages used
     pacman::p_load(tidyverse, stringr, tidytext, textclean, textstem)
     require(textclean)
-    require(textstem)
-  
-
   
   # load custom functions  
     if(!exists("read_in.R", mode="function")) source("read_in.R")
     if(!exists("text_clean.R", mode="function")) source("text_clean.R")
     if(!exists("first_clean.R", mode="function")) source("first_clean.R")
-   # if(!exists("chatbot.R", mode="function")) source("chatbot.R")
-    if(!exists("check_cat.R", mode="function")) source("check_cat.R")
-    if(!exists("predictResponse.R", mode="function")) source("predictResponse.R")
+    if(!exists("chatbot.R", mode="function")) source("chatbot.R")
+    
 
     # import revised stop word list
     custom_spwords <- read_in(filename="stopwords.csv", subfolder="", infolder=F)
@@ -38,41 +31,14 @@ controller <- function() {
 
 #-- Start up dataset ------------------------------------------------------------------------------
     
+  source("read_in.R")
   data <- read_in(filename="Datathon.csv", infolder=F)    
 
 #-- Take in Query ---------------------------------------------------------------------------------
 
-    query <- "does sei provide housing?"
-  #query <- readline(":: > ")
+  query <- readline(":: > ")
   # or
   # query <- scan()
-  
-  q <- c(query, "?", "")
-  data <- rbind(data, q)
-  
-  # add identifier column
-  id <- rownames(data)
-  data <- cbind(data,id)  
-  colnames(data) <- c("Text", "Intent", "Response", "ID")
-
-  # categories should be factors
-  data$Intent <- as.factor(data$Intent)
-  
-  # save location of query
-  l <- length(data$Question)
- 
-  cleanData <- first_clean(data)
-  # intention is called "IntentCat"
- 
-  cleanQuery <- cleanData[l,] 
-  cleanQuery <- cleanQuery %>%
-    select(-ID)
-  
-  cleanData <- cleanData[-l,] 
-  cleanData <- cleanData %>%
-    select(-ID)
-
-  
   
   # storage for all queries in conversation
   conversation <- NULL
@@ -82,22 +48,65 @@ controller <- function() {
   while (query != "exit") {
     # save the entirety of the raw conversation
     conversation <- rbind(conversation, query) # do we want query or response["cleanQuery"]?
+    toClean <- rbind(data, query)
+    
+    
+  cleanData <- first_clean(data)
+    
+  #---- Cleaning the query ------------------------------------------------------------------------
+    ### use parallel methods to how we prepared our model data!
+    # Lemmas/Stems
+    # Stopwords
+    # Typos, Synonyms
   
-      
-    prediction <- predictResponse(cleanData, cleanQuery)
+    # see fixTypos --> create custom dictionary for synonym mgmt if necessary (SEI's --> SEI is)
+    clean <- text_clean(query)
+    clean <- as_data_frame(lemmatize_strings(clean, dictionary = lexicon::hash_lemmas)) #\
+  
+    # tokenize
+    tokens <- clean %>%
+      unnest_tokens(token, value) %>%
+      filter(!is.na(token))
+  
+    ### Stopword management - see wordListMgmt.R
+    ### Synonyms
+  
+    # remove stop words (edit stop words as necessary)
+    tokens <- tokens %>%
+      filter(!token %in% custom_spwords$word)
     
-    response <- cleanData$IntentCat[check_cat(prediction, cleanData$IntentCat)]
+    ### Recombine
+    cleanQuery <- paste(unlist(c(tokens, use.names=F)), collapse=" ")
+  
+  #-- Activate models -----------------------------------------------------------------------------
+    # run models code    
+    #...
+    #...
+    
+    models <- list() # aggregate list of models by name
 
+  #-- Figure out a response -----------------------------------------------------------------------
     
+    # save predicted response 
+    response <- responsebot(cleanQuery, models)
+
+
+  #-- Add query data to update models -------------------------------------------------------------
+    
+    # add response["cleanQuery"] to models
+    cleanQuery <- response["cleanQuery"]
+    prediction <- response["prediction"]
+    newRow <- cbind(cleanQuery, prediction)
+    cleanData <- rbind(cleanData, newRow)
+    
+
+  
   #-- Loop ----------------------------------------------------------------------------------------
   
     if (prediction = "unknown") {
-      print("Please visit SEI website for further information")
       query <- readline("...> ") 
     } else {
-      print(response)
       query <- readline(":: > ")
     }
     
   } # end while
-} # end function

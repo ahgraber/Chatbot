@@ -21,7 +21,6 @@ Find,Replace
 \bhoodies\b,jacket
 \bfashion\b,style
 \bdesign\b,style
-\bapproach\b,style
 \bexpression\b,style
 \btrend\b,style
 \bmanner\b,style
@@ -38,14 +37,13 @@ Find,Replace
 \bresidences\b,housing
 \bhomes\b,housing
 \bbuildings\b,housing
-\baccommodate\b,housing
 \bstay\b,housing
 \blodgement\b,housing
 \blodge\b,housing
 \bquarters\b,housing
 \bhostel\b,housing
 \blocate\b,location
-\bplace\b,location
+\bplace\b,housing
 \blocality\b,location
 \boccupation\b,jobs
 \bwork\b,jobs
@@ -58,12 +56,17 @@ Find,Replace
 \bduty\b,jobs
 \btask\b,jobs
 \broles\b,jobs
-\bmajors\b,jobs
+\bposition\b,jobs
+\bmajors\b,specialisation
 \bsponsor\b,finance
-\bexpenditure\b,finance
-\bamount\b,finance
-\bexpenses\b,finance
-\breimburse\b,finance
+\bexpenditure\b,cost
+spending,cost
+expenses,cost
+\bamount\b,money
+\breimburse\b,repay
+compensate,repay
+ refund,repay
+remunarate,repay
 \bpaid\b,salary
 \bstipend\b,salary
 \bwage\b,salary
@@ -105,7 +108,6 @@ Find,Replace
 \bmeeting\b,interview
 \bdiscussion\b,interview
 \btelephonic\b,interview
-\btelephone\b,interview
 \bfacility\b,amenity
 \bservice\b,amenity
 \bresource\b,amenity
@@ -117,4 +119,17 @@ Find,Replace
 \btransport\b,travel
 \bqualified\b,eligible
 \bsuitable\b,eligible
-\bschool's\b,school
+\bqualify\b,fit
+\b suitable\b,fit
+\breviewed \b, assess
+\b check\b, assess
+\b  department\b,division
+\b unit\b,division
+\bauthorization \b,approval
+\bcontracts \b,obligation
+\bbond \b,obligation
+\bcommitment \b,obligation
+\bconventional \b,regular
+\b usual\b,regular
+\b typical\b,regular
+\b chosen\b,selected

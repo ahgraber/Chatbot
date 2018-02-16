@@ -25,6 +25,11 @@ responsebot <- function (cleanQuery, models) {
 #-- Response engine -------------------------------------------------------------------------------
   ### all print commands go here
     
+  check_cat <- function(string1 , intent){
+    return(match(string1,intent)) 
+  }
+  
+  response <- 
   # do we have good prediction to return a canned response or do we need more info?
   if (prediction == 1) {
      print()  # canned response for topic 1
