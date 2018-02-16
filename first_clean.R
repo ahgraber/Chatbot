@@ -102,7 +102,7 @@
   colnames(cleanData) <- c("ID","Text","Intent")
   
 #--------------------------------------------------------------------------------------------------
-### Tidy data
+### Tidy & Widen data
   
   unigrams <- cleanData %>%
     unnest_tokens(token, Text)
@@ -110,10 +110,15 @@
   bigrams <- cleanData %>%
     unnest_tokens(token, Text, token = "ngrams", n = 2)
   
-  tidy <- rbind(unigrams, bigrams) 
+  tidyData <- rbind(unigrams, bigrams) %>%
+    group_by(ID, token) %>%
+    summarize(n = n()) %>%
+    ungroup()
   
-  matrix <- cast_sparse(tidy, ID, token)
-
-                    
+  wideData <- tidyData %>%
+    group_by(ID) %>%
+    # summarize(Quantity2 = ifelse(sum(Quantity) <= 0, 0, 1)) %>%
+    spread(key = token, value = n, fill = 0, drop=F) %>%
+    ungroup()              
                     
 

@@ -45,10 +45,8 @@ Find,Replace
 \bquarters\b,housing
 \bhostel\b,housing
 \blocate\b,location
-\bposition\b,location
 \bplace\b,location
 \blocality\b,location
-\bspot\b,location
 \boccupation\b,jobs
 \bwork\b,jobs
 \bcareer\b,jobs
@@ -60,7 +58,6 @@ Find,Replace
 \bduty\b,jobs
 \btask\b,jobs
 \broles\b,jobs
-\bposition\b,jobs
 \bmajors\b,jobs
 \bsponsor\b,finance
 \bexpenditure\b,finance
