@@ -22,15 +22,17 @@ first_clean <- function (data) {
 #--------------------------------------------------------------------------------------------------
 ### Import model data
 
-  # # categories should be factors
-  # data$Intent <- as.factor(data$Intent)
-  # # should we include numeric values?
-  # 
-  # # add identifier column
-  # id <- rep(00001:dim(data)[1])
-  # data <- cbind(data,id)
-  # 
-  # colnames(data) <- c("Text", "Intent", "Response", "ID")
+  # categories should be factors
+  data$Intent <- as.factor(data$Intent)
+  # should we include numeric values?
+
+  # add identifier column
+  id <- rownames(data)
+  data <- cbind(data,id)
+
+  colnames(data) <- c("Text", "Intent", "Response", "ID")
+  intention <- data %>%
+    select(Intent, ID)
   # # or
     # Combine question & response text(?) for better prediction(?)
     # we could also insert the category as every other word to tighten associations between keywords and category
@@ -111,8 +113,8 @@ first_clean <- function (data) {
     spread(key = token, value = n, fill = 0, drop=F) %>%
     ungroup()              
   
-  wideData <- cbind(wideData, cleanData$Intent)
-  names(wideData)[names(wideData) == 'cleanData$Intent'] <- 'IntentCat'
+  wideData <- right_join(wideData, intention, by = "ID")
+  names(wideData)[names(wideData) == 'Intent'] <- 'IntentCat'
 
 #--------------------------------------------------------------------------------------------------
 

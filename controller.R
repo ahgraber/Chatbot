@@ -37,67 +37,90 @@ controller <- function() {
   # multi-topic response - nice to have
 
 #-- Start up dataset ------------------------------------------------------------------------------
-    
+
   data <- read_in(filename="Datathon.csv", infolder=F)    
+  intention <- data %>%
+    select(Intent,Response)
 
 #-- Take in Query ---------------------------------------------------------------------------------
 
-    query <- "does sei provide housing?"
-  #query <- readline(":: > ")
-  # or
-  # query <- scan()
-  
-  q <- c(query, "?", "")
-  data <- rbind(data, q)
-  
-  # add identifier column
-  id <- rownames(data)
-  data <- cbind(data,id)  
-  colnames(data) <- c("Text", "Intent", "Response", "ID")
+  # query <- "hi"
+  # query <- readline(":: > ")
+#----
+  # q <- c(query, "?", "")
+  # data <- rbind(data, q)
+  # 
+  # # save location of query
+  # l <- length(data$Question)
+  # 
+  # cleanData <- first_clean(data)
+  # # intention is called "IntentCat"
+  # 
+  # 
+  # cleanQuery <- cleanData[cleanData$ID==l,]
+  # cleanQuery$ID <- NULL
+  # cleanData$ID <- NULL
+  # cleanData <- cleanData[-l,]
+# ---
 
-  # categories should be factors
-  data$Intent <- as.factor(data$Intent)
-  
-  # save location of query
-  l <- length(data$Question)
- 
-  cleanData <- first_clean(data)
-  # intention is called "IntentCat"
- 
-  cleanQuery <- cleanData[l,] 
-  cleanQuery <- cleanQuery %>%
-    select(-ID)
-  
-  cleanData <- cleanData[-l,] 
-  cleanData <- cleanData %>%
-    select(-ID)
-
-  
-  
   # storage for all queries in conversation
-  conversation <- NULL
-
+  # conversation <- NULL
+  # response <- NULL
   #-- Activate chatbot? ---------------------------------------------------------------------------
+  # while ( TRUE ) {
+    query <- readline(":: > ")
 
-  while (query != "exit") {
-    # save the entirety of the raw conversation
-    conversation <- rbind(conversation, query) # do we want query or response["cleanQuery"]?
-  
-      
-    prediction <- predictResponse(cleanData, cleanQuery)
-    
-    response <- cleanData$IntentCat[check_cat(prediction, cleanData$IntentCat)]
-
-    
-  #-- Loop ----------------------------------------------------------------------------------------
-  
-    if (prediction = "unknown") {
-      print("Please visit SEI website for further information")
-      query <- readline("...> ") 
-    } else {
-      print(response)
-      query <- readline(":: > ")
+    if (query == "exit") {
+      break
     }
+    else {
+      q <- c(query, "?", "")
+      data <- rbind(data, q)
     
-  } # end while
+      # save location of query
+      l <- length(data$Question)
+    
+      cleanData <- first_clean(data)
+      # intention is called "IntentCat"
+    
+    
+      cleanQuery <- cleanData[cleanData$ID==l,]
+      cleanQuery$ID <- NULL
+      cleanData$ID <- NULL
+      cleanData <- cleanData[-l,]
+      
+      response <- NULL
+      prediction <- NULL
+      prediction <- predictResponse(cleanData, cleanQuery)
+      response <- intention[check_cat(prediction, intention$Intent), "Response"]
+      
+      ### for SVMS
+      # prediction <- predictResponse(cleanData, cleanQuery)
+      # prediction <- cbind(prediction, rownames(prediction))
+      # colnames(prediction) <- c("p", "Intent")
+      # prediction <- sort(prediction$p)
+      # 
+      # response <- intention[check_cat(prediction, intention$Intent), "Response"]
+      # print(response)
+      #if (is.na(response)) {
+      #  print("Please visit SEI website for further information")
+      #} else {
+        print(as.character(response))
+      #}
+
+    } # end else
+
+    # query <- readline(":: > ")
+      
+    # if (prediction == "unknown") {
+    #   print("Please visit SEI website for further information")
+    #   query <- readline("...> ") 
+    # } else {
+    #   print(as.character(response))
+    #   response = NULL
+    #   query <- readline(":: > ")
+    # }
+  
+  # } # end while
 } # end function
+

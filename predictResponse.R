@@ -58,9 +58,8 @@ predictResponse <- function(data, query) {
 # support vector machine
   model_svm <- function(data, instance, cl) {
     res <- NULL
-    data_new <- as_data_frame(data)
-    s <- svm(x = data_new, y = cl, probability = TRUE)
-    s2 <- predict(s, t(instance), probability = TRUE)
+    s <- svm(x = data, y = cl, probability = TRUE)
+    s2 <- predict(s, instance, probability = TRUE)
     sprob <- t(attr(s2, "probabilities"))
     #res <- sprob[order(sprob[1]), decreasing = TRUE]
     return(sprob)
@@ -72,9 +71,8 @@ predictResponse <- function(data, query) {
     classes <- unique(cl)
     for (k in 1:length(classes)) {
       cl_new <- as.numeric(cl==classes[k])
-      data_new <- as_data_frame(data)
-      data_new$classes <- cl_new
-      nb <- naive_bayes(x = data_new, y = cl_new)
+      data$classes <- cl_new
+      nb <- naive_bayes(x = data, y = cl_new)
       nb2 <- predict(nb, instance, type = "prob")
       res <- rbind(res,nb2)
     }
@@ -85,12 +83,16 @@ predictResponse <- function(data, query) {
   #reassign variables
   b <- as.factor(data$IntentCat)
   data$IntentCat <- NULL
+  query$IntentCat <- NULL
   #data <- as.matrix(data)
   
-  reg <- model_regression(data = data, instance = query, cl = b)
-  # kn <- model_knn(data = data, instance = query, cl = b,  n_n = 5)
+  # reg <- model_regression(data = data, instance = query, cl = b)
+  # return(reg[1,1])
+  kn <- model_knn(data = data, instance = query, cl = b,  n_n = 5)
+  return(kn)
   # sv <- model_svm(data = data, instance = query, cl = b)
-  # nb1 <- model_nb(data = data, instance = query, cl = b)
-  return(reg[1,1])
+  # return(sv)
+   # nb1 <- model_nb(data = data, instance = query, cl = b)
+  # return()
 }
 
