@@ -22,74 +22,18 @@
   # install.packages("topicmodels")
   # install.packages("zoo")
 
-#--------------------------------------------------------------------------------------------------
+  source("read_in.R")
 
+#--------------------------------------------------------------------------------------------------
 # Goals:
-  # Take in training data; pre-classified questions and canned responses
-  # Clean (same process as model for || inputs)
   # Build classification engines (SVM, logistic regression, clustering)
     # likely need one model per category
   # Save classification models
 
-
 #--------------------------------------------------------------------------------------------------
-### Import model data
+
+  # clean data
   
-  source("read_in.R")  
-  # read_in( "filename", infolder=F, <if T> subfolder= "subfolder" )
-
-  # Import data
-  data <- read_in(filename="Demo Inputs.csv", infolder=F)
-
-  # categories should be factors
-  data$Category <- as.factor(data$Category)
-
-  # Combine question & response text(?) for better prediction(?)
-    # we could also insert the category as every other word to tighten associations between keywords and category
-  data$Text <- paste(data$Question," ",data$Response)
-
-#--------------------------------------------------------------------------------------------------
-### Cleaning
-  # Stopwords
-  # Lemmas/Stems
-  # Typos, Synonyms
-  
-  library(tidytext)
-  library(textclean)
-  library(textstem)
-
-  source("read_in.R") 
-  source("text_clean.R")
-
-  # Cleaning
-  clean <- text_clean(data$Text)
-  
-  # Lemmas
-  clean <- as_data_frame(lemmatize_strings(clean, dictionary = lexicon::hash_lemmas)) %>%
-    cbind(data$Category) %>%
-    magrittr::set_colnames(c("Text","Category"))
-  
-  # Typos and Synonyms
-    # see fixTypos --> create custom dictionary for synonym mgmt if necessary (SEI's --> SEI is)
-    # for Synonyms, either force replacement or build dictionary to lookup for unknown values
-      # force replacement is probably easier
-      # want to replace before tokenizing
-
-  # tokenize
-  tokens <- clean %>%
-    unnest_tokens(token, Text) %>%
-    filter(!is.na(token))
-
-  # Stopword management - create after looking at theorized queries
-  # import revised stop word list
-  custom_spwords <- read_in(filename="custom_spwords.csv", subfolder="", infolder=F)
-  # remove stop words (edit stop words as necessary)
-  tokens <- tokens %>%
-    filter(!token %in% custom_spwords$word)
-  
-  # Recombine
-  cleanData <- aggregate(data = tokens, token ~ Category, paste, collapse = " ")
-
 #--------------------------------------------------------------------------------------------------
 ### Tokens & NGrams
   # ref: https://opendatascience.com/blog/word-vectors-with-tidy-data-principles/?_hsenc=p2ANqtz-9GWzoN-EyEr34OEDwsb4HeMZG67cm7VaatpjlxVAHVHPbgqhXExtNV5Gu6SryM0rNpAfuNH-B1ZCWUmwRjoFdoE5RQHA&_hsmi=60230911

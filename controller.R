@@ -14,7 +14,7 @@
     if(!exists("chatbot.R", mode="function")) source("chatbot.R")
 
     # import revised stop word list
-    custom_spwords <- read_in(filename="custom_spwords.csv", subfolder="reference/Lists", infolder=T)
+    custom_spwords <- read_in(filename="stopwords.csv", subfolder="", infolder=F)
     
 #-- Sequence---------------------------------------------------------------------------------------
 
