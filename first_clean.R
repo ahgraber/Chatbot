@@ -30,13 +30,11 @@ first_clean <- function (data) {
   id <- rownames(data)
   data <- cbind(data,id)
 
+  # ensure everything has correct column name
   colnames(data) <- c("Text", "Intent", "Response", "ID")
+  # save link between intent and ID
   intention <- data %>%
     select(Intent, ID)
-  # # or
-    # Combine question & response text(?) for better prediction(?)
-    # we could also insert the category as every other word to tighten associations between keywords and category
-  # data$Text <- paste(data$Question," ",data$Response)
 
 #--------------------------------------------------------------------------------------------------
 ### Cleaning
@@ -57,9 +55,6 @@ first_clean <- function (data) {
   # Lemmas
   clean <- lemmatize_strings(clean, dictionary = lexicon::hash_lemmas)
   
-  # Typos and Synonyms
-    # see fixTypos --> create custom dictionary for synonym mgmt if necessary (SEI's --> SEI is)
-    
   # for Synonyms, either force replacement or build dictionary to lookup for unknown values
       # force replacement is probably easier
       # want to replace before tokenizing
@@ -71,6 +66,7 @@ first_clean <- function (data) {
   # replace synonyms with single term
   temp <- stringi::stri_replace_all_regex(clean, find, replace, 
                                           vectorize_all=F, case_insensitive=T)
+  # add row IDs back to cleaned data
   clean <- as_data_frame(text_clean(temp)) %>%
     cbind(data$ID)
   colnames(clean) <- c("Text","ID")
@@ -102,11 +98,13 @@ first_clean <- function (data) {
   bigrams <- cleanData %>%
     unnest_tokens(token, Text, token = "ngrams", n = 2)
   
+  # put unigrams and bigrams into single data structure
   tidyData <- rbind(unigrams, bigrams) %>%
     group_by(ID, token) %>%
     summarize(n = n()) %>%
     ungroup()
   
+  # transition from tall to wide data
   wideData <- tidyData %>%
     group_by(ID) %>%
     # summarize(Quantity2 = ifelse(sum(Quantity) <= 0, 0, 1)) %>%
